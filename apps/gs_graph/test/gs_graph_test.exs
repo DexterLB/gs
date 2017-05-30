@@ -14,10 +14,10 @@ defmodule GSGraphTest do
     ])
 
     got = GSGraph.get(node.id)
-    assert got.parent == nil
-    assert got.pseudo_parents == %{}
-    assert got.children == %{}
-    assert got.pseudo_children == %{}
-    assert got.data == %{foo: 'bar'}
+    assert got |> GSGraph.parent == nil
+    assert got |> GSGraph.pseudo_parents == %{}
+    assert got |> GSGraph.parents == %{}
+    assert got |> GSGraph.pseudo_children == %{}
+    assert got = %{foo: 'bar'}
   end
 end
