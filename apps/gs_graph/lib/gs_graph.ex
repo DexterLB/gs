@@ -1,9 +1,12 @@
+use Amnesia
+
 defmodule GSGraph do
   @moduledoc """
   foo bar
   """
 
   alias GSGraph.Database
+  alias GSGraph.Writes
 
   @doc """
   """
@@ -12,7 +15,12 @@ defmodule GSGraph do
   end
 
   def update!(operations) do
-    nil
+    Amnesia.transaction do
+      operations
+        |> Enum.map(&Writes.run/1)
+        |> Enum.all?(fn(result) -> result == :ok end)
+        |> bool_error
+    end
   end
 
   def get(id) do
@@ -38,4 +46,7 @@ defmodule GSGraph do
   def data(node) do
     node.data
   end
+
+  defp bool_error(true), do: :ok
+  defp bool_error(false), do: :error
 end
