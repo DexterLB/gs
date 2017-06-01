@@ -16,7 +16,7 @@ defmodule GSGraph do
   end
 
   def get(id) do
-    Database.Node.read!(id) |> hd
+    Database.Node.read!(id)
   end
 
   def parent(node) do

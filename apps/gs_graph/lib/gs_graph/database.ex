@@ -1,7 +1,7 @@
 use Amnesia
 
 defdatabase GSGraph.Database do
-  deftable Node, [{ :id, autoincrement }, :data], type: :bag do
+  deftable Node, [{ :id, autoincrement }, :data], type: :set do
     def new() do
       new(nil)
     end

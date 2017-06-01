@@ -20,4 +20,8 @@ defmodule GSGraphTest do
     assert got |> GSGraph.pseudo_children == %{}
     assert got |> GSGraph.data == %{foo: 'bar'}
   end
+
+  test "getting non-existant node returns nil" do
+    assert GSGraph.get(424242) == nil
+  end
 end
