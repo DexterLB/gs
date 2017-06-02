@@ -35,6 +35,6 @@ defmodule GSGraphTest do
     ]) == :ok
 
     assert GSGraph.parent(son) == father.id
-    assert GSGraph.children(father) == %{"blood": [son.id]}
+    assert GSGraph.children(father) == %{"blood" => [son.id]}
   end
 end
