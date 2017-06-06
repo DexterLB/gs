@@ -1,7 +1,9 @@
 use Amnesia
 
 defdatabase GSGraph.Database do
-  deftable Node, [{ :id, autoincrement }, :data], type: :set do
+  deftable Node, [{ :id, autoincrement }, :data, :children, :parent], type: :set do
+    @type t :: %Node{id: integer, data: %{}}
+
     def new() do
       new(nil)
     end
@@ -9,7 +11,5 @@ defdatabase GSGraph.Database do
     def new(data) do
       %Node{data: data} |> Node.write!
     end
-
-    @type t :: %Node{id: integer, data: %{}}
   end
 end
