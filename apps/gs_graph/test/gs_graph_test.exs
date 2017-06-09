@@ -31,10 +31,12 @@ defmodule GSGraphTest do
 
     assert GSGraph.update!([
       {:adopt, father, nil},
-      {:adopt, son, {father, "blood"}}
+      {:adopt, son, {father.id, "blood"}}
     ]) == :ok
 
-    assert GSGraph.parent(son) == father.id
-    assert GSGraph.children(father) == %{"blood" => [son.id]}
+    new_son = GSGraph.get(son.id)
+    new_father = GSGraph.get(father.id)
+    assert GSGraph.parent(new_son) == {new_father.id, "blood"}
+    assert GSGraph.children(new_father) == %{"blood" => MapSet.new [new_son.id]}
   end
 end

@@ -28,7 +28,7 @@ defmodule GSGraph do
   end
 
   def parent(node) do
-    nil
+    node.parent
   end
 
   def pseudo_parents(node) do
@@ -36,7 +36,7 @@ defmodule GSGraph do
   end
 
   def children(node) do
-    %{}
+    node.children
   end
 
   def pseudo_children(node) do
