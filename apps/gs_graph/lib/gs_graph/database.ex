@@ -1,7 +1,15 @@
 use Amnesia
 
 defdatabase GSGraph.Database do
-  deftable Node, [{ :id, autoincrement }, :data, {:children, %{}}, :parent], type: :set do
+  deftable Node, [
+        { :id, autoincrement },
+        :data, 
+        {:children, %{}},
+        :parent,
+        {:pseudo_parents, %{}},
+        {:pseudo_children, %{}}
+      ], type: :set do
+
     @type t :: %Node{id: integer, data: %{}}
 
     def new() do
@@ -37,6 +45,20 @@ defdatabase GSGraph.Database do
       %Node{
         node |
           children: pop_child(node.children, child_id, label)
+      } |> Node.write()
+    end
+
+    def add_pseudo_parent(node, pseudo_parent_id, label) do
+      %Node {
+        node |
+          pseudo_parents: Map.put(node.pseudo_parents, label, pseudo_parent_id)
+      } |> Node.write()
+    end
+
+    def add_pseudo_child(node, pseudo_child_id, label) do
+      %Node {
+        node |
+          pseudo_children: append_child(node.pseudo_children, pseudo_child_id, label)
       } |> Node.write()
     end
 
