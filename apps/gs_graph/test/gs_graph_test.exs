@@ -32,7 +32,7 @@ defmodule GSGraphTest do
 
     assert GSGraph.update!([
       {:adopt, father.id, nil},
-      {:adopt, son.id, {father.id, "blood"}}
+      {:adopt, father.id, "blood", son.id}
     ]) == :ok
 
     new_son = GSGraph.get(son.id)
@@ -46,7 +46,7 @@ defmodule GSGraphTest do
     b = GSGraph.make_node(%{})
 
     assert GSGraph.update!([
-      {:attach, b.id, {a.id, "sees"}}
+      {:attach, a.id, "sees", b.id}
     ]) == :ok
 
     new_a = GSGraph.get(a.id)
@@ -64,11 +64,11 @@ defmodule GSGraphTest do
     b = GSGraph.make_node(%{})
 
     assert GSGraph.update!([
-      {:attach, b.id, {a.id, "sees"}}
+      {:attach, a.id, "sees", b.id}
     ]) == :ok
 
     assert GSGraph.update!([
-      {:detach, b.id, {a.id, "sees"}}
+      {:detach, a.id, "sees", b.id}
     ]) == :ok
 
     new_a = GSGraph.get(a.id)
@@ -79,5 +79,76 @@ defmodule GSGraphTest do
 
     assert new_b |> GSGraph.pseudo_children == %{}
     assert new_a |> GSGraph.pseudo_parents == %{}
+  end
+
+  test "multiple connections" do
+    root = GSGraph.make_node(%{})
+    a = GSGraph.make_node(%{})
+    b = GSGraph.make_node(%{})
+    c = GSGraph.make_node(%{})
+    d = GSGraph.make_node(%{})
+
+    assert GSGraph.update!([
+      {:adopt, a.id, "incest", b.id},
+      {:adopt, c.id, "incest", d.id},
+      {:adopt, root.id, "blood", a.id},
+      {:adopt, root.id, "incest", c.id},
+      {:attach, c.id, "likes", b.id},
+      {:attach, c.id, "has sex with", b.id},
+      {:attach, c.id, "visits", root.id},
+      {:attach, b.id, "hates", d.id}
+    ]) == :ok
+
+    new_root = GSGraph.get(root.id)
+    new_a = GSGraph.get(a.id)
+    new_b = GSGraph.get(b.id)
+    new_c = GSGraph.get(c.id)
+    new_d = GSGraph.get(d.id)
+
+    assert new_root |> GSGraph.children == %{
+      "blood" => MapSet.new([a.id]),
+      "incest" => MapSet.new([c.id])
+    }
+    assert new_root |> GSGraph.parent == nil
+    assert new_root |> GSGraph.pseudo_children == %{}
+    assert new_root |> GSGraph.pseudo_parents == %{
+      "visits" => MapSet.new [c.id]
+    }
+
+    assert new_a |> GSGraph.children == %{
+      "incest" => MapSet.new [b.id]
+    }
+    assert new_a |> GSGraph.parent == {root.id, "blood"}
+    assert new_a |> GSGraph.pseudo_children == %{}
+    assert new_a |> GSGraph.pseudo_parents == %{}
+
+
+    assert new_b |> GSGraph.children == %{}
+    assert new_b |> GSGraph.parent == {a.id, "incest"}
+    assert new_b |> GSGraph.pseudo_children == %{
+      "hates" => MapSet.new [d.id]
+    }
+    assert new_b |> GSGraph.pseudo_parents == %{
+      "likes" => MapSet.new([c.id]),
+      "has sex with" => MapSet.new([c.id])
+    }
+
+    assert new_c |> GSGraph.children == %{
+      "incest" => MapSet.new [d.id]
+    }
+    assert new_c |> GSGraph.parent == {root.id, "incest"}
+    assert new_c |> GSGraph.pseudo_children == %{
+      "likes" => MapSet.new([b.id]),
+      "has sex with" => MapSet.new([b.id]),
+      "visits" => MapSet.new([root.id])
+    }
+    assert new_c |> GSGraph.pseudo_parents == %{}
+
+    assert new_d |> GSGraph.children == %{}
+    assert new_d |> GSGraph.parent == {c.id, "incest"}
+    assert new_d |> GSGraph.pseudo_children == %{}
+    assert new_d |> GSGraph.pseudo_parents == %{
+      "hates" => MapSet.new [b.id]
+    }
   end
 end
