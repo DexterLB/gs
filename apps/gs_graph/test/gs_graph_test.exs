@@ -10,10 +10,11 @@ defmodule GSGraphTest do
     node = GSGraph.make_node(%{name: 'bruce'})
 
     assert GSGraph.update!([
-      {:adopt, node, nil}
+      {:adopt, node.id, nil}
     ]) == :ok
 
     got = GSGraph.get(node.id)
+
     assert got |> GSGraph.parent == nil
     assert got |> GSGraph.pseudo_parents == %{}
     assert got |> GSGraph.children == %{}
@@ -30,8 +31,8 @@ defmodule GSGraphTest do
     son = GSGraph.make_node(%{})
 
     assert GSGraph.update!([
-      {:adopt, father, nil},
-      {:adopt, son, {father.id, "blood"}}
+      {:adopt, father.id, nil},
+      {:adopt, son.id, {father.id, "blood"}}
     ]) == :ok
 
     new_son = GSGraph.get(son.id)
@@ -45,7 +46,7 @@ defmodule GSGraphTest do
     b = GSGraph.make_node(%{})
 
     assert GSGraph.update!([
-      {:attach, b, {a.id, "sees"}}
+      {:attach, b.id, {a.id, "sees"}}
     ]) == :ok
 
     new_a = GSGraph.get(a.id)
@@ -63,11 +64,11 @@ defmodule GSGraphTest do
     b = GSGraph.make_node(%{})
 
     assert GSGraph.update!([
-      {:attach, b, {a.id, "sees"}}
+      {:attach, b.id, {a.id, "sees"}}
     ]) == :ok
 
     assert GSGraph.update!([
-      {:detach, b, {a.id, "sees"}}
+      {:detach, b.id, {a.id, "sees"}}
     ]) == :ok
 
     new_a = GSGraph.get(a.id)

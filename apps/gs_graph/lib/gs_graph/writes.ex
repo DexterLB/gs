@@ -1,7 +1,9 @@
 defmodule GSGraph.Writes do
   alias GSGraph.Database.Node
 
-  def run({:adopt, child, nil}) do
+  def run({:adopt, child_id, nil}) do
+    child = Node.read(child_id)
+
     clear_from_parent(child)
 
     child       |> Node.clear_parent()
@@ -9,7 +11,9 @@ defmodule GSGraph.Writes do
     :ok
   end
 
-  def run({:adopt, child, {new_parent_id, new_label}}) do
+  def run({:adopt, child_id, {new_parent_id, new_label}}) do
+    child = Node.read(child_id)
+
     clear_from_parent(child)
 
     new_parent = Node.read(new_parent_id)
@@ -20,7 +24,8 @@ defmodule GSGraph.Writes do
     :ok
   end
 
-  def run({:attach, pseudo_child, {pseudo_parent_id, label}}) do
+  def run({:attach, pseudo_child_id, {pseudo_parent_id, label}}) do
+    pseudo_child = Node.read(pseudo_child_id)
     pseudo_parent = Node.read(pseudo_parent_id)
 
     pseudo_child    |> Node.add_pseudo_parent(pseudo_parent_id, label)
@@ -29,7 +34,8 @@ defmodule GSGraph.Writes do
     :ok
   end
 
-  def run({:detach, pseudo_child, {pseudo_parent_id, label}}) do
+  def run({:detach, pseudo_child_id, {pseudo_parent_id, label}}) do
+    pseudo_child = Node.read(pseudo_child_id)
     pseudo_parent = Node.read(pseudo_parent_id)
     
     pseudo_child |> Node.del_pseudo_parent(pseudo_parent_id, label)
