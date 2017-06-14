@@ -57,4 +57,26 @@ defmodule GSGraphTest do
     assert new_b |> GSGraph.pseudo_children == %{}
     assert new_a |> GSGraph.pseudo_parents == %{}
   end
+
+  test "detach works" do
+    a = GSGraph.make_node(%{})
+    b = GSGraph.make_node(%{})
+
+    assert GSGraph.update!([
+      {:attach, b, {a.id, "sees"}}
+    ]) == :ok
+
+    assert GSGraph.update!([
+      {:detach, b, {a.id, "sees"}}
+    ]) == :ok
+
+    new_a = GSGraph.get(a.id)
+    new_b = GSGraph.get(b.id)
+
+    assert new_b |> GSGraph.pseudo_parents == %{}
+    assert new_a |> GSGraph.pseudo_children == %{}
+
+    assert new_b |> GSGraph.pseudo_children == %{}
+    assert new_a |> GSGraph.pseudo_parents == %{}
+  end
 end
