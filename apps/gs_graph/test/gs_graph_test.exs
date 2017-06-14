@@ -151,4 +151,46 @@ defmodule GSGraphTest do
       "hates" => MapSet.new [b.id]
     }
   end
+
+  test "visualise the graph" do
+    root = GSGraph.make_node(%{})
+    a = GSGraph.make_node(%{})
+    b = GSGraph.make_node(%{})
+    c = GSGraph.make_node(%{})
+    d = GSGraph.make_node(%{})
+
+    assert GSGraph.update!([
+      {:adopt, a.id, "incest", b.id},
+      {:adopt, c.id, "incest", d.id},
+      {:adopt, root.id, "blood", a.id},
+      {:adopt, root.id, "incest", c.id},
+      {:attach, c.id, "likes", b.id},
+      {:attach, c.id, "has sex with", b.id},
+      {:attach, c.id, "visits", root.id},
+      {:attach, b.id, "hates", d.id}
+    ]) == :ok
+
+    expected_lines = [
+      ~s(    #{b.id} -> #{a.id} [label="incest" style=solid];),
+      ~s(    #{d.id} -> #{c.id} [label="incest" style=solid];),
+      ~s(    #{a.id} -> #{root.id} [label="blood" style=solid];),
+      ~s(    #{c.id} -> #{root.id} [label="incest" style=solid];),
+      ~s(    #{b.id} -> #{c.id} [label="likes" style=dashed];),
+      ~s(    #{b.id} -> #{c.id} [label="has sex with" style=dashed];),
+      ~s(    #{root.id} -> #{c.id} [label="visits" style=dashed];),
+      ~s(    #{d.id} -> #{b.id} [label="hates" style=dashed];)
+    ]
+
+    result = GSGraph.visualise(MapSet.new([a.id, b.id, c.id, d.id, root.id]))
+      |> to_string
+      |> String.split("\n")
+
+    assert result |> List.first == "digraph gs {"
+    assert result |> List.last  == "}"
+
+    assert result 
+      |> Enum.drop(1)
+      |> Enum.drop(-1)
+      |> MapSet.new == MapSet.new(expected_lines)
+  end
 end
