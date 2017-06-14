@@ -29,6 +29,15 @@ defmodule GSGraph.Writes do
     :ok
   end
 
+  def run({:detach, pseudo_child, {pseudo_parent_id, label}}) do
+    pseudo_parent = GSGraph.get(pseudo_parent_id)
+    
+    pseudo_child |> Node.del_pseudo_parent(pseudo_parent_id, label)
+    pseudo_parent |> Node.del_pseudo_child(pseudo_child.id, label)
+
+    :ok
+  end
+
   defp clear_from_parent(child) do
     case child.parent do
       {parent_id, label} ->

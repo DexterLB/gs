@@ -62,6 +62,20 @@ defdatabase GSGraph.Database do
       } |> Node.write()
     end
 
+    def del_pseudo_child(node, child_id, label) do
+      %Node {
+        node |
+          pseudo_children: pop_child(node.pseudo_children, child_id, label)
+      } |> Node.write()
+    end
+
+    def del_pseudo_parent(node, parent_id, label) do
+      %Node {
+        node |
+          pseudo_parents: pop_child(node.pseudo_parents, parent_id, label)
+      } |> Node.write()
+    end
+
     defp append_child(children, child_id, label) do
       children
         |> Map.put(
@@ -71,7 +85,7 @@ defdatabase GSGraph.Database do
     end
 
     defp pop_child(children, child_id, label) do
-      case Map.get(children, label) |> MapSet.delete(child_id) do
+      case Map.get(children, label, %MapSet{}) |> MapSet.delete(child_id) do
         %MapSet{} -> children |> Map.delete(label)
         label_set -> %{ children | label => label_set }
       end
