@@ -47,6 +47,10 @@ defmodule GSGraph do
     node.data
   end
 
+  def visualise_all() do
+    all_node_ids() |> visualise()
+  end
+
   def visualise(node_ids) do
     ["digraph gs {\n", visual_format_edges(node_ids), "}"]
   end
@@ -112,5 +116,11 @@ defmodule GSGraph do
     Amnesia.transaction do
       node_ids |> Enum.map(&Database.Node.read/1)
     end
+  end
+
+  defp all_node_ids do
+    Amnesia.transaction do
+      Database.Node.match([:id]) |> Amnesia.Selection.values
+    end |> Enum.map(fn(node) -> node.id end) |> MapSet.new
   end
 end
