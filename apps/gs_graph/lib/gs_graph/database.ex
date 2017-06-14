@@ -51,7 +51,7 @@ defdatabase GSGraph.Database do
     def add_pseudo_parent(node, pseudo_parent_id, label) do
       %Node {
         node |
-          pseudo_parents: Map.put(node.pseudo_parents, label, pseudo_parent_id)
+          pseudo_parents: append_child(node.pseudo_parents, pseudo_parent_id, label)
       } |> Node.write()
     end
 

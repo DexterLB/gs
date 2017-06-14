@@ -51,7 +51,7 @@ defmodule GSGraphTest do
     new_a = GSGraph.get(a.id)
     new_b = GSGraph.get(b.id)
 
-    assert new_b |> GSGraph.pseudo_parents == %{"sees" => a.id}
+    assert new_b |> GSGraph.pseudo_parents == %{"sees" => MapSet.new [a.id]}
     assert new_a |> GSGraph.pseudo_children == %{"sees" => MapSet.new [b.id]}
 
     assert new_b |> GSGraph.pseudo_children == %{}
