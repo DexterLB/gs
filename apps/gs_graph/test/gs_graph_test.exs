@@ -162,7 +162,7 @@ defmodule GSGraphTest do
     foo = GSGraph.make_node(%{foo: "bar"})
 
     assert GSGraph.update!([
-      {:set_data, foo.id, %{baz: "qux"}
+      {:set_data, foo.id, %{baz: "qux"}}
     ]) == :ok
 
     assert foo.id |> GSGraph.data == %{baz: "qux"}
