@@ -152,6 +152,22 @@ defmodule GSGraphTest do
     }
   end
 
+  test "retains data" do
+    foo = GSGraph.make_node(%{foo: "bar"})
+
+    assert foo.id |> GSGraph.data == %{foo: "bar"}
+  end
+
+  test "data can be updated" do
+    foo = GSGraph.make_node(%{foo: "bar"})
+
+    assert GSGraph.update!([
+      {:set_data, foo.id, %{baz: "qux"}
+    ]) == :ok
+
+    assert foo.id |> GSGraph.data == %{baz: "qux"}
+  end
+
   test "visualise the graph" do
     root = GSGraph.make_node(%{})
     a = GSGraph.make_node(%{})
