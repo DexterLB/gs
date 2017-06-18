@@ -4,7 +4,7 @@ defmodule Mix.Tasks.GsGraph.Visualise do
   def run(_) do
     {:ok, _started} = Application.ensure_all_started(:gs_graph)
 
-    GSGraph.visualise_all |> writedot |> picturify |> show
+    GsGraph.visualise_all |> writedot |> picturify |> show
   end
 
   def writedot(text) do

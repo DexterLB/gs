@@ -1,12 +1,12 @@
 use Amnesia
 
-defmodule GSGraph do
+defmodule GsGraph do
   @moduledoc """
   foo bar
   """
 
-  alias GSGraph.Database
-  alias GSGraph.Writes
+  alias GsGraph.Database
+  alias GsGraph.Writes
 
   @doc """
   """

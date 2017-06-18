@@ -1,6 +1,6 @@
 use Amnesia
 
-defdatabase GSGraph.Database do
+defdatabase GsGraph.Database do
   deftable Node, [
         { :id, autoincrement },
         :data, 

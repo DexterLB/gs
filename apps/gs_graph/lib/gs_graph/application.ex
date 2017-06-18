@@ -1,4 +1,4 @@
-defmodule GSGraph.Application do
+defmodule GsGraph.Application do
   # See http://elixir-lang.org/docs/stable/elixir/Application.html
   # for more information on OTP Applications
   @moduledoc false
@@ -10,13 +10,13 @@ defmodule GSGraph.Application do
 
     # Define workers and child supervisors to be supervised
     children = [
-      # Starts a worker by calling: GSGraph.Worker.start_link(arg1, arg2, arg3)
-      # worker(GSGraph.Worker, [arg1, arg2, arg3]),
+      # Starts a worker by calling: GsGraph.Worker.start_link(arg1, arg2, arg3)
+      # worker(GsGraph.Worker, [arg1, arg2, arg3]),
     ]
 
     # See http://elixir-lang.org/docs/stable/elixir/Supervisor.html
     # for other strategies and supported options
-    opts = [strategy: :one_for_one, name: GSGraph.Supervisor]
+    opts = [strategy: :one_for_one, name: GsGraph.Supervisor]
     Supervisor.start_link(children, opts)
   end
 end

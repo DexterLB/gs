@@ -1,4 +1,4 @@
-defmodule GSGraph.Mixfile do
+defmodule GsGraph.Mixfile do
   use Mix.Project
 
   def project do
@@ -20,7 +20,7 @@ defmodule GSGraph.Mixfile do
   def application do
     # Specify extra applications you'll use from Erlang/Elixir
     [extra_applications: [:logger],
-     mod: {GSGraph.Application, []}]
+     mod: {GsGraph.Application, []}]
   end
 
   # Dependencies can be Hex packages:

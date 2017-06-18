@@ -1,5 +1,5 @@
-defmodule GSGraph.Writes do
-  alias GSGraph.Database.Node
+defmodule GsGraph.Writes do
+  alias GsGraph.Database.Node
 
   def run({:adopt, child_id, nil}) do
     child = Node.read(child_id)
