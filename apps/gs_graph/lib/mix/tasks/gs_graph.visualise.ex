@@ -33,5 +33,7 @@ defmodule Mix.Tasks.GsGraph.Visualise do
     {_, 0} = System.cmd("xdg-open", [
       image_file
     ])
+
+    :ok
   end
 end
