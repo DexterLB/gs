@@ -76,6 +76,13 @@ defdatabase GsGraph.Database do
       } |> Node.write()
     end
 
+    def set_data(node = %Node{}, data) do
+        %Node{
+        node |
+            data: data
+        } |> write
+    end
+
     defp append_child(children, child_id, label) do
       children
         |> Map.put(

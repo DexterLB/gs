@@ -44,6 +44,12 @@ defmodule GsGraph.Writes do
     :ok
   end
 
+  def run({:set_data, node_id, data = %{}}) do
+    node_id |> Node.read |> Node.set_data(data)
+
+    :ok
+  end
+
   defp clear_from_parent(child) do
     case child.parent do
       {parent_id, label} ->

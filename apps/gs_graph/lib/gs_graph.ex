@@ -5,13 +5,13 @@ defmodule GsGraph do
   foo bar
   """
 
-  alias GsGraph.Database
+  alias GsGraph.Database.Node
   alias GsGraph.Writes
 
   @doc """
   """
   def make_node(data = %{}) do
-    Database.Node.new(data)
+    Node.new(data)
   end
 
   def update!(operations) do
@@ -24,7 +24,7 @@ defmodule GsGraph do
   end
 
   def get(id) do
-    Database.Node.read!(id)
+    Node.read!(id)
   end
 
   def parent(node) do
@@ -43,8 +43,12 @@ defmodule GsGraph do
     node.pseudo_children
   end
   
-  def data(node) do
-    node.data
+  def data(%Node{data: node_data}) do
+    node_data
+  end
+
+  def data(node_id) do
+    node_id |> get |> data
   end
 
   def visualise_all() do
@@ -114,13 +118,13 @@ defmodule GsGraph do
 
   defp get_nodes(node_ids) do
     Amnesia.transaction do
-      node_ids |> Enum.map(&Database.Node.read/1)
+      node_ids |> Enum.map(&Node.read/1)
     end
   end
 
   defp all_node_ids do
     Amnesia.transaction do
-      Database.Node.match([:id]) |> Amnesia.Selection.values
+      Node.match([:id]) |> Amnesia.Selection.values
     end |> Enum.map(fn(node) -> node.id end) |> MapSet.new
   end
 end
