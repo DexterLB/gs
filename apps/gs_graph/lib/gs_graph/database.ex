@@ -1,5 +1,7 @@
 use Amnesia
 
+# time for some metaprogramming magic.
+
 defdatabase GsGraph.Database do
   deftable Node, [
         { :id, autoincrement },
@@ -10,7 +12,22 @@ defdatabase GsGraph.Database do
         {:pseudo_children, %{}}
       ], type: :set do
 
-    @type t :: %Node{id: integer, data: %{}}
+
+    @type id            :: integer
+    @type data          :: %{}
+    @type label         :: String.t
+    @type transitions   :: %{label: MapSet.t(id)}
+    @type transition    :: {label, id}
+
+
+    @type t :: %Node{
+      id: integer,
+      data: data,
+      children: transitions,
+      parent: transition,
+      pseudo_parents: transitions,
+      pseudo_children: transitions
+    }
 
     def new() do
       new(nil)
