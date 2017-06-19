@@ -19,11 +19,20 @@ defmodule GsGraph do
     # nodes
 
     Amnesia.transaction do
-      operations
-        |> Enum.map(&Writes.run/1)
-        |> Enum.all?(fn(result) -> result == :ok end)
-        |> bool_error
+      results = operations |> Enum.map(&Writes.run/1)
+      errors = results |> Enum.filter(&is_error/1)
+
+      case errors do
+        [] -> results |> List.flatten |> nudge
+        errors -> Amnesia.cancel({:error, errors})
+      end
     end
+  end
+
+  def nudge(nodes) do
+    IO.puts "must nudge nodes"
+    IO.inspect nodes
+    :ok
   end
 
   def get(id) do
@@ -61,9 +70,6 @@ defmodule GsGraph do
   def visualise(node_ids) do
     ["digraph gs {\n", visual_format_edges(node_ids), "}"]
   end
-
-  defp bool_error(true), do: :ok
-  defp bool_error(false), do: :error
 
   defp visual_format_edges(nodes) do
     nodes |> edges_between |> Enum.map(&visual_format_edge/1)
@@ -130,4 +136,7 @@ defmodule GsGraph do
       Node.match([:id]) |> Amnesia.Selection.values
     end |> Enum.map(fn(node) -> node.id end) |> MapSet.new
   end
+
+  defp is_error({:error, _}), do: true
+  defp is_error(_), do: false
 end

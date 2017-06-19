@@ -8,9 +8,10 @@ defmodule GsGraph.Writes do
     {:detach, Node.id, Node.label, Node.id} |
     {:set_data, Node.id, Node.data}
 
-  @type maybe_error :: {:error, any} | :ok
+  @type error :: {:error, any}
+  @type maybe_error :: error | :ok
 
-  @spec run(update_operation) :: maybe_error
+  @spec run(update_operation) :: [Node.t] | error
 
   def run({:adopt, child_id, nil}) do
     child = Node.read(child_id)
@@ -19,7 +20,7 @@ defmodule GsGraph.Writes do
 
     child       |> Node.clear_parent()
 
-    :ok
+    [child]
   end
 
   def run({:adopt, new_parent_id, new_label, child_id}) do
@@ -32,7 +33,7 @@ defmodule GsGraph.Writes do
     child       |> Node.set_parent(new_parent_id, new_label)
     new_parent  |> Node.add_child(child.id, new_label)    
 
-    :ok
+    [child, new_parent]
   end
 
   def run({:attach, pseudo_parent_id, label, pseudo_child_id}) do
@@ -42,7 +43,7 @@ defmodule GsGraph.Writes do
     pseudo_child    |> Node.add_pseudo_parent(pseudo_parent_id, label)
     pseudo_parent   |> Node.add_pseudo_child(pseudo_child.id, label)
 
-    :ok
+    [pseudo_child, pseudo_parent]
   end
 
   def run({:detach, pseudo_parent_id, label, pseudo_child_id}) do
@@ -52,13 +53,15 @@ defmodule GsGraph.Writes do
     pseudo_child |> Node.del_pseudo_parent(pseudo_parent_id, label)
     pseudo_parent |> Node.del_pseudo_child(pseudo_child.id, label)
 
-    :ok
+    [pseudo_child, pseudo_parent]
   end
 
   def run({:set_data, node_id, data = %{}}) do
-    node_id |> Node.read |> Node.set_data(data)
+    node = node_id |> Node.read
+    
+    node |> Node.set_data(data)
 
-    :ok
+    [node]
   end
 
   defp clear_from_parent(child) do
