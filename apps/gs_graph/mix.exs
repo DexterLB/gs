@@ -38,6 +38,7 @@ defmodule GsGraph.Mixfile do
   # Type "mix help deps" for more examples and options
   defp deps do
     [
+      {:dialyxir, "~> 0.5", only: [:dev], runtime: false},
       {:amnesia, "~> 0.2.0"}
     ]
   end

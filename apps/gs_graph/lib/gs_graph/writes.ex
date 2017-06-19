@@ -1,6 +1,8 @@
 defmodule GsGraph.Writes do
   alias GsGraph.Database.Node
 
+  @spec run(GsGraph.update_operation) :: (:error | :ok)
+
   def run({:adopt, child_id, nil}) do
     child = Node.read(child_id)
 

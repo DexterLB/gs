@@ -29,13 +29,19 @@ defdatabase GsGraph.Database do
       pseudo_children: transitions
     }
 
+    @spec new() :: t
+
     def new() do
       new(nil)
     end
 
+    @spec new(data) :: t
+
     def new(data) do
       %Node{data: data} |> Node.write!
     end
+
+    @spec clear_parent(t) :: t
 
     def clear_parent(node) do
       %Node{
@@ -44,12 +50,16 @@ defdatabase GsGraph.Database do
       } |> Node.write()
     end
 
+    @spec set_parent(t, id, label) :: t
+
     def set_parent(node, parent_id, label) do
       %Node{
         node |
           parent: {parent_id, label}
       } |> Node.write()
     end
+
+    @spec add_child(t, id, label) :: t
 
     def add_child(node, child_id, label) do
       %Node{
@@ -58,12 +68,16 @@ defdatabase GsGraph.Database do
       } |> Node.write()
     end
 
+    @spec del_child(t, id, label) :: t
+
     def del_child(node, child_id, label) do
       %Node{
         node |
           children: pop_child(node.children, child_id, label)
       } |> Node.write()
     end
+
+    @spec add_pseudo_parent(t, id, label) :: t
 
     def add_pseudo_parent(node, pseudo_parent_id, label) do
       %Node {
@@ -72,12 +86,16 @@ defdatabase GsGraph.Database do
       } |> Node.write()
     end
 
+    @spec add_pseudo_child(t, id, label) :: t
+
     def add_pseudo_child(node, pseudo_child_id, label) do
       %Node {
         node |
           pseudo_children: append_child(node.pseudo_children, pseudo_child_id, label)
       } |> Node.write()
     end
+
+    @spec del_pseudo_child(t, id, label) :: t
 
     def del_pseudo_child(node, child_id, label) do
       %Node {
@@ -86,12 +104,16 @@ defdatabase GsGraph.Database do
       } |> Node.write()
     end
 
+    @spec del_pseudo_parent(t, id, label) :: t
+
     def del_pseudo_parent(node, parent_id, label) do
       %Node {
         node |
           pseudo_parents: pop_child(node.pseudo_parents, parent_id, label)
       } |> Node.write()
     end
+
+    @spec set_data(t, data) :: t
 
     def set_data(node = %Node{}, data) do
         %Node{
