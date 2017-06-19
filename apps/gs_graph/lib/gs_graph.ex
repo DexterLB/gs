@@ -15,6 +15,9 @@ defmodule GsGraph do
   end
 
   def update!(operations) do
+    # TODO: loop over all writes, transforming IDs to their respective
+    # nodes
+
     Amnesia.transaction do
       operations
         |> Enum.map(&Writes.run/1)
