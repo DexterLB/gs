@@ -14,10 +14,10 @@ defdatabase GsGraph.Database do
 
 
     @type id            :: integer
-    @type data          :: %{}
+    @type data          :: %{} | nil
     @type label         :: String.t
     @type transitions   :: %{label: MapSet.t(id)}
-    @type transition    :: {label, id}
+    @type transition    :: {label, id} | nil
 
 
     @type t :: %Node{
@@ -29,7 +29,7 @@ defdatabase GsGraph.Database do
       pseudo_children: transitions
     }
 
-    @spec new() :: t
+    @spec new() :: t | no_return
 
     def new() do
       new(nil)

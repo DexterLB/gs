@@ -8,13 +8,6 @@ defmodule GsGraph do
   alias GsGraph.Database.Node
   alias GsGraph.Writes
 
-  @type update_operation ::
-    {:adopt, Node.id, nil} |
-    {:adopt, Node.id, Node.label, Node.id} |
-    {:attach, Node.id, Node.label, Node.id} |
-    {:detach, Node.id, Node.label, Node.id} |
-    {:set_data, Node.id, Node.data}
-
   @doc """
   """
   def make_node(data = %{}) do
