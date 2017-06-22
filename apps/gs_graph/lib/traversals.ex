@@ -4,27 +4,44 @@ defmodule GsGraph.Traversals do
   alias __MODULE__
   alias GsGraph.Database.Node
 
-  def nudge_step(node_ids) do
-    node_ids |> Enum.map(&Traversals.nudge_node/1) |> List.flatten |> MapSet.new
+  def nudge_nodes(node_ids) do
+    Amnesia.transaction do
+      nudge_nodes(node_ids, MapSet.new)
+    end
   end
 
-  def nudge_node(node_id) do
-    IO.inspect node_id
-    Amnesia.transaction do
-      node = Node.read(node_id)
+  defp nudge_nodes(node_ids, visited) do
+    case MapSet.size(node_ids) do
+      0 -> :ok
+      _ ->
+        unvisited = MapSet.difference(node_ids, visited)
 
-      %Node{
-        node |
-          ref: node.ref + 1
-      } |> Node.write
+        new_nodes = unvisited 
+          |> Enum.map(&Traversals.nudge_node/1)
+          |> List.foldr(MapSet.new, &MapSet.union/2)
 
-      
-      pseudo_parent_ids = node.pseudo_parents |> Enum.map(fn({id, _}) -> id end)
+        nudge_nodes(new_nodes, MapSet.union(visited, unvisited))
+    end
+  end
 
-      case node.parent do
-        {id, _} -> [id|pseudo_parent_ids]
-        nil     -> pseudo_parent_ids
-      end
+  defp nudge_node(node_id) do
+    node = Node.read(node_id)
+
+    %Node{
+      node |
+        ref: node.ref + 1
+    } |> Node.write
+
+    # this should happen with an atomic dirty operation, but it isn't
+    # exposed in mnesia, and some metaprogramming magic will be needed
+    
+    pseudo_parent_ids = node.pseudo_parents 
+      |> Map.values 
+      |> List.foldr(MapSet.new, &MapSet.union/2)
+
+    case node.parent do
+      {id, _} -> pseudo_parent_ids |> MapSet.put(id)
+      nil     -> pseudo_parent_ids
     end
   end
 end

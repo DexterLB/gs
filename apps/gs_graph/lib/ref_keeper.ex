@@ -42,7 +42,6 @@ defmodule GsGraph.RefKeeper do
   # ***** Handlers *****
 
   defp handle_nudge(node_ids) do
-    # can't decide whether it's better to block
-    node_ids |> Traversals.nudge_step |> RefKeeper.nudge
+    node_ids |> Traversals.nudge_nodes
   end
 end

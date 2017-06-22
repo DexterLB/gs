@@ -95,7 +95,6 @@ defmodule GsGraphTest do
       {:adopt, root.id, "incest", c.id},
       {:attach, c.id, "likes", b.id},
       {:attach, c.id, "has sex with", b.id},
-      {:attach, c.id, "visits", root.id},
       {:attach, b.id, "hates", d.id}
     ]) == :ok
 
@@ -112,7 +111,6 @@ defmodule GsGraphTest do
     assert new_root |> GsGraph.parent == nil
     assert new_root |> GsGraph.pseudo_children == %{}
     assert new_root |> GsGraph.pseudo_parents == %{
-      "visits" => MapSet.new [c.id]
     }
 
     assert new_a |> GsGraph.children == %{
@@ -140,7 +138,6 @@ defmodule GsGraphTest do
     assert new_c |> GsGraph.pseudo_children == %{
       "likes" => MapSet.new([b.id]),
       "has sex with" => MapSet.new([b.id]),
-      "visits" => MapSet.new([root.id])
     }
     assert new_c |> GsGraph.pseudo_parents == %{}
 
@@ -182,7 +179,6 @@ defmodule GsGraphTest do
       {:adopt, root.id, "incest", c.id},
       {:attach, c.id, "likes", b.id},
       {:attach, c.id, "has sex with", b.id},
-      {:attach, c.id, "visits", root.id},
       {:attach, b.id, "hates", d.id}
     ]) == :ok
 
@@ -193,7 +189,6 @@ defmodule GsGraphTest do
       ~s(    #{c.id} -> #{root.id} [label="incest" style=solid];),
       ~s(    #{b.id} -> #{c.id} [label="likes" style=dashed];),
       ~s(    #{b.id} -> #{c.id} [label="has sex with" style=dashed];),
-      ~s(    #{root.id} -> #{c.id} [label="visits" style=dashed];),
       ~s(    #{d.id} -> #{b.id} [label="hates" style=dashed];)
     ]
 
