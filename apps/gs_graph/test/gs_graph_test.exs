@@ -209,4 +209,33 @@ defmodule GsGraphTest do
       |> Enum.drop(-1)
       |> MapSet.new == MapSet.new(expected_lines)
   end
+
+  test "visualise data" do
+    root = GsGraph.make_node(%{})
+    a = GsGraph.make_node(%{})
+
+    assert GsGraph.update!([
+      {:adopt, root.id, "blood", a.id},
+      {:set_data, root.id, %{foo: "bar"}},
+      {:set_data, a.id, %{foo: 42, bar: "qux"}}
+    ]) == :ok
+
+    expected_lines = [
+      ~s(    #{a.id} -> #{root.id} [label="blood" style=solid];),
+      ~s(    #{root.id} [shape=record label="<f0> #{root.id}\\n\\<#{root.ref}\\>|<f1> foo: \\\"bar\\\"\\n"];),
+      ~s(    #{a.id} [shape=record label="<f0> #{a.id}\\n\\<#{a.ref}\\>|<f1> bar: \\\"qux\\\"\\nfoo: 42\\n"];),
+    ]
+
+    result = GsGraph.visualise(MapSet.new([a.id, root.id]))
+      |> to_string
+      |> String.split("\n")
+
+    assert result |> List.first == "digraph gs {"
+    assert result |> List.last  == "}"
+
+    assert result 
+      |> Enum.drop(1)
+      |> Enum.drop(-1)
+      |> MapSet.new == MapSet.new(expected_lines)
+  end
 end

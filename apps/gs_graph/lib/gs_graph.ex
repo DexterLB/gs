@@ -102,7 +102,11 @@ defmodule GsGraph do
       data 
         |> Map.to_list 
         |> Enum.sort 
-        |> Enum.map(fn({k, v}) -> "#{k}: #{v}\\n" end)
+        |> Enum.map(
+          fn({k, v}) -> 
+            "#{k}: #{inspect(v)}\\n" |> String.replace("\"", "\\\"")
+          end
+        )
     end
 
     [
