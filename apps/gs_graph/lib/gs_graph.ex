@@ -7,6 +7,7 @@ defmodule GsGraph do
 
   alias GsGraph.Database.Node
   alias GsGraph.Writes
+  alias GsGraph.RefKeeper
 
   @doc """
   """
@@ -26,23 +27,25 @@ defmodule GsGraph do
         [] -> results |> List.flatten |> nudge
         errors -> Amnesia.cancel({:error, errors})
       end
+
+      :ok
     end
   end
 
   def nudge(nodes) do
-    IO.puts "must nudge nodes"
-    IO.inspect nodes
-    :ok
+    nodes |> Enum.map(fn(node) -> node.id end) |> MapSet.new |> RefKeeper.nudge
   end
 
   def get(id) do
     Node.read!(id)
   end
 
+  # this should be private (or at least discouraged from use)
   def parent(node) do
     node.parent
   end
 
+  # this should be private (or at least discouraged from use)
   def pseudo_parents(node) do
     node.pseudo_parents
   end

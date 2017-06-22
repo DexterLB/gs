@@ -5,7 +5,8 @@ use Amnesia
 defdatabase GsGraph.Database do
   deftable Node, [
         { :id, autoincrement },
-        :data, 
+        :data,
+        {:ref, 0},
         {:children, %{}},
         :parent,
         {:pseudo_parents, %{}},
@@ -21,8 +22,9 @@ defdatabase GsGraph.Database do
 
 
     @type t :: %Node{
-      id: integer,
+      id: id,
       data: data,
+      ref: integer,
       children: transitions,
       parent: transition,
       pseudo_parents: transitions,
