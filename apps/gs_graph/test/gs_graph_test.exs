@@ -189,7 +189,12 @@ defmodule GsGraphTest do
       ~s(    #{c.id} -> #{root.id} [label="incest" style=solid];),
       ~s(    #{b.id} -> #{c.id} [label="likes" style=dashed];),
       ~s(    #{b.id} -> #{c.id} [label="has sex with" style=dashed];),
-      ~s(    #{d.id} -> #{b.id} [label="hates" style=dashed];)
+      ~s(    #{d.id} -> #{b.id} [label="hates" style=dashed];),
+      ~s(    #{root.id} [shape=record label="<f0> #{root.id}\\n\\<#{root.ref}\\>|<f1> "];),
+      ~s(    #{a.id} [shape=record label="<f0> #{a.id}\\n\\<#{a.ref}\\>|<f1> "];),
+      ~s(    #{b.id} [shape=record label="<f0> #{b.id}\\n\\<#{b.ref}\\>|<f1> "];),
+      ~s(    #{c.id} [shape=record label="<f0> #{c.id}\\n\\<#{c.ref}\\>|<f1> "];),
+      ~s(    #{d.id} [shape=record label="<f0> #{d.id}\\n\\<#{d.ref}\\>|<f1> "];)
     ]
 
     result = GsGraph.visualise(MapSet.new([a.id, b.id, c.id, d.id, root.id]))

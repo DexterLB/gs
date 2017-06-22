@@ -71,11 +71,21 @@ defmodule GsGraph do
   end
 
   def visualise(node_ids) do
-    ["digraph gs {\n", visual_format_edges(node_ids), "}"]
+    nodes = get_nodes(node_ids)
+    [
+      "digraph gs {\n",
+        visual_format_edges(nodes), 
+        visual_format_nodes(nodes),
+      "}"
+    ]
   end
 
   defp visual_format_edges(nodes) do
     nodes |> edges_between |> Enum.map(&visual_format_edge/1)
+  end
+
+  defp visual_format_nodes(nodes) do
+    nodes |> Enum.map(&visual_format_node/1)
   end
 
   defp visual_format_edge({from, {type, label}, to}) do
@@ -87,13 +97,32 @@ defmodule GsGraph do
     [~s(    #{from} -> #{to} [label="#{label}" style=#{style}];), "\n"]
   end
 
-  defp edges_between(node_ids) do
+  defp visual_format_node(node) do
+    format_data = fn(data) ->
+      data 
+        |> Map.to_list 
+        |> Enum.sort 
+        |> Enum.map(fn({k, v}) -> "#{k}: #{v}\\n" end)
+    end
+
+    [
+      ~s(    #{node.id} [shape=record label="), 
+      ~s(<f0> #{node.id}\\n\\<#{node.ref}\\>|),
+      ~s(<f1> ),
+      format_data.(node.data),
+      ~s("];),
+      "\n"
+    ]
+  end
+
+  defp edges_between(nodes) do
+    node_ids = Enum.map(nodes, fn(node) -> node.id end) |> MapSet.new
+
     is_local = fn({from, _, to}) ->
       (node_ids |> MapSet.member?(from)) and (node_ids |> MapSet.member?(to))
     end
 
-    node_ids
-      |> get_nodes
+    nodes
       |> Enum.map(&edges_for/1) 
       |> List.flatten
       |> Enum.filter(is_local) 

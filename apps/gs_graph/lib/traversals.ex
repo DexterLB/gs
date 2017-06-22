@@ -1,7 +1,6 @@
 defmodule GsGraph.Traversals do
   use Amnesia
 
-  alias __MODULE__
   alias GsGraph.Database.Node
 
   def nudge_nodes(node_ids) do
@@ -17,7 +16,7 @@ defmodule GsGraph.Traversals do
         unvisited = MapSet.difference(node_ids, visited)
 
         new_nodes = unvisited 
-          |> Enum.map(&Traversals.nudge_node/1)
+          |> Enum.map(&nudge_node/1)
           |> List.foldr(MapSet.new, &MapSet.union/2)
 
         nudge_nodes(new_nodes, MapSet.union(visited, unvisited))
