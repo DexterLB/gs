@@ -66,6 +66,10 @@ defmodule GsGraph do
     node_id |> get |> data
   end
 
+  def subscribe(pid, node_id) do
+    :ok
+  end
+
   def visualise_all() do
     all_node_ids() |> visualise()
   end
