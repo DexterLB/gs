@@ -7,7 +7,8 @@ defmodule GsGraph.Supervisor do
 
   def init(:ok) do
     children = [
-      worker(GsGraph.RefKeeper, [GsGraph.RefKeeper])
+      worker(GsGraph.RefKeeper, [GsGraph.RefKeeper]),
+      worker(GsGraph.Subscriber.Supervisor, [GsGraph.Subscriber.Supervisor]),
     ]
 
     supervise(children, strategy: :one_for_one)
