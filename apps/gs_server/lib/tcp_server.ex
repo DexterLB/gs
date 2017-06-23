@@ -2,7 +2,11 @@ defmodule GsServer.TcpServer do
   def listen do
     {:ok, socket} = :gen_tcp.listen(
       Application.fetch_env!(:gs_server, :port),
-      [:binary, packet: :line, active: false, reuseaddr: true]
+      [
+        :binary, 
+        packet: :line, active: false, reuseaddr: true,
+        ip: Application.fetch_env!(:gs_server, :ip)
+      ]
     )
 
     accept(socket)

@@ -30,4 +30,5 @@ use Mix.Config
 #     import_config "#{Mix.env}.exs"
 
 config :gs_server,
-  port: 9998
+  port: 9998,
+  ip: {0,0,0,0,0,0,0,1}
