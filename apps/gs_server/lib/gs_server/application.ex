@@ -6,7 +6,7 @@ defmodule GsServer.Application do
 
     # Define workers and child supervisors to be supervised
     children = [
-      worker(GsServer.TcpServer.Supervisor, [])
+      worker(GsServer.TcpServer.Supervisor, [:foo])
     ]
 
     # See http://elixir-lang.org/docs/stable/elixir/Supervisor.html

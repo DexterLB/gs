@@ -16,7 +16,10 @@ defmodule GsServer.TcpServer do
     {:ok, client} = :gen_tcp.accept(socket)
     {:ok, pid} = Task.Supervisor.start_child(
       GsServer.TcpServer.ClientSupervisor,
-      fn -> serve_loop(client) end
+      fn ->
+        {:ok, pid} = GenServer.start_link(GsServer.Session, client)
+        serve_loop(client, pid) 
+      end
     )
 
     :ok = :gen_tcp.controlling_process(client, pid)
@@ -24,13 +27,13 @@ defmodule GsServer.TcpServer do
     accept(socket)
   end
 
-  defp serve(client) do
+  defp serve(client, session_pid) do
     {:ok, data} = :gen_tcp.recv(client, 0)
-    :gen_tcp.send(client, "you sent: " <> data)
+    GenServer.cast(session_pid, {:receive, data})
   end
 
-  defp serve_loop(client) do
-    serve(client)
-    serve_loop(client)
+  defp serve_loop(client, session_pid) do
+    serve(client, session_pid)
+    serve_loop(client, session_pid)
   end
 end
