@@ -66,8 +66,11 @@ defmodule GsGraph do
     node_id |> get |> data
   end
 
-  def subscribe(pid, node_id) do
-    :ok
+  def subscribe(pid, node_ids) do
+    case GsGraph.Subscriber.Supervisor.start_subscriber({pid, node_ids}) do
+      {:ok, _} -> :ok
+      error -> error
+    end
   end
 
   def visualise_all() do

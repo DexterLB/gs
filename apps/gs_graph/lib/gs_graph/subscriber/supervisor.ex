@@ -19,3 +19,5 @@ defmodule GsGraph.Subscriber.Supervisor do
     supervise(children, strategy: :simple_one_for_one)
   end
 end
+
+

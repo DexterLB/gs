@@ -242,10 +242,12 @@ defmodule GsGraphTest do
   test "subscribe receives single data update" do
     node = GsGraph.make_node(%{foo: 42})
 
-    assert GsGraph.subscribe(self(), node.id) == :ok
+    assert GsGraph.subscribe(self(), [node.id]) == :ok
+
+    assert_receive({:nodes_changed, [%GsGraph.Database.Node{data: %{foo: 42}}]})
 
     assert GsGraph.update!([{:set_data, node.id, %{foo: 56}}]) == :ok
 
-    assert_receive({:node_changed, %GsGraph.Database.Node{data: %{foo: 56}}})
+    assert_receive({:nodes_changed, [%GsGraph.Database.Node{data: %{foo: 56}}]})
   end
 end
