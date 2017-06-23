@@ -250,4 +250,27 @@ defmodule GsGraphTest do
 
     assert_receive({:nodes_changed, [%GsGraph.Database.Node{data: %{foo: 56}}]})
   end
+
+  test "subscribe receives update for child" do
+    a = GsGraph.make_node(%{})
+    b = GsGraph.make_node(%{foo: "bar"})
+
+    assert GsGraph.update!([
+      {:adopt, a.id, "connection", b.id}
+    ]) == :ok
+
+    assert GsGraph.subscribe(self(), [a.id]) == :ok
+
+    :timer.sleep(100)
+
+    assert GsGraph.update!([{:set_data, b.id, %{foo: "baz"}}]) == :ok
+
+    a_id = a.id
+    b_id = b.id
+
+    assert_receive({:nodes_changed, [
+      %GsGraph.Database.Node{id: ^b_id, data: %{foo: "baz"}},
+      %GsGraph.Database.Node{id: ^a_id}
+    ]})
+  end
 end

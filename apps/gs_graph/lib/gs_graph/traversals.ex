@@ -30,15 +30,29 @@ defmodule GsGraph.Traversals do
         end end
       )
 
+
     new_refs = new_nodes
       |> Enum.map(fn(node) -> {node.id, node.ref} end)
       |> Map.new
     
     children = new_nodes
-      |> Enum.map(fn(node) -> [node.children, node.pseudo_children] end)
+      |> Enum.map(&node_children/1)
       |> List.flatten
+      |> MapSet.new
+      |> MapSet.to_list
 
     new_ref_search(children, Map.merge(known, new_refs), [new_nodes, found_nodes])
+  end
+
+  defp node_children(node) do
+    [
+      node.children |> remove_labels,
+      node.pseudo_children |> remove_labels
+    ]
+  end
+
+  defp remove_labels(transitions) do
+    transitions |> Map.values |> Enum.map(&MapSet.to_list/1)
   end
 
   defp nudge_nodes(node_ids, visited) do
