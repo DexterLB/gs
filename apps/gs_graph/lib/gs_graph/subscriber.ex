@@ -32,6 +32,6 @@ defmodule GsGraph.Subscriber do
   end
 
   defp schedule_check do
-    Process.send_after(self(), :check, 20)
+    Process.send_after(self(), :check, Application.fetch_env!(:gs_graph, :update_interval))
   end
 end
