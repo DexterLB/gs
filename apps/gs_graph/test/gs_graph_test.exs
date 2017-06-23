@@ -273,4 +273,16 @@ defmodule GsGraphTest do
       %GsGraph.Database.Node{id: ^a_id}
     ]})
   end
+
+  test "unsubscribe works" do
+    node = GsGraph.make_node(%{foo: 42})
+
+    assert GsGraph.subscribe(self(), [node.id]) == :ok
+
+    assert_receive({:nodes_changed, [%GsGraph.Database.Node{data: %{foo: 42}}]})
+
+    assert GsGraph.update!([{:set_data, node.id, %{foo: 56}}]) == :ok
+
+    assert_receive({:nodes_changed, [%GsGraph.Database.Node{data: %{foo: 56}}]})
+  end
 end
