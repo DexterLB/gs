@@ -293,4 +293,8 @@ defmodule GsGraphTest do
 
     assert GsGraph.get_by_name("a nice node") == node.id
   end
+
+  test "getting non-existing name returns nil" do
+    assert GsGraph.get_by_name("not a real thing") == nil
+  end
 end
