@@ -9,17 +9,19 @@ defmodule GsServer.ActionSpec do
     end
   end
 
-  defmacro action(name, do: block) do
-    action_name = String.to_atom("action_" <> name)
+  defmacro action(name, args, do: block) do
+    action_name = String.to_atom("action_" <> name) # need a better name
+
+    arg_names = args |> Enum.map(fn({name, _, _}) -> name end)
 
     quote do
       @actions Map.put(
         @actions,
         unquote(name),
-        unquote(action_name)
+        {unquote(action_name), unquote(arg_names)}
       )
 
-      def unquote(action_name)(), do: unquote(block)
+      def unquote(action_name)(unquote(args)), do: unquote(block)
     end
   end
 
@@ -29,8 +31,13 @@ defmodule GsServer.ActionSpec do
         @actions
       end
 
-      def run_action(action, args \\ []) do
-        apply(__MODULE__, Map.get(@actions, action), args)
+      def run_action(action, args \\ %{}) when is_map(args) do
+        {action_name, arg_names} = Map.get(@actions, action)
+
+        arg_list = arg_names
+          |> Enum.map(fn(name) -> Map.get(args, Atom.to_string(name)) end)
+
+        apply(__MODULE__, action_name, [arg_list])
       end
     end
   end
