@@ -47,4 +47,10 @@ defmodule SampleGame.Actions do
 
     {:ok, data}
   end
+
+  action "debug_visual", [data] do
+    :ok = Mix.Tasks.GsGraph.Visualise.run(nil)
+
+    {:ok, data}
+  end
 end
