@@ -76,6 +76,8 @@ defmodule SampleGame.Actions do
           {:adopt, field(), "is in", new_player.id},
           {:adopt, new_player.id, "position", new_position.id}
         ])
+        
+        :ok = GsGraph.subscribe(self(), [new_player.id])
 
         new_player.id
 
