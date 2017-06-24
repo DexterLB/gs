@@ -16,8 +16,8 @@ defmodule GsServer.Session do
     action(action_name, args, state)
   end
 
-  defp action("kill", whom, state = {client, action_spec, _node_id}) do
-    write(client, ["you killed ", whom, " with ", inspect(action_spec)])
+  defp action(name, args, state = {_client, action_spec, _node_id}) do
+    apply(action_spec, :run_action, [name, args])
 
     state
   end

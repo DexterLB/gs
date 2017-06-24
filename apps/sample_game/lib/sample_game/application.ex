@@ -5,7 +5,7 @@ defmodule SampleGame.Application do
     import Supervisor.Spec, warn: false
 
     children = [
-      worker(GsServer.TcpServer.Supervisor, [:foo])
+      worker(GsServer.TcpServer.Supervisor, [SampleGame.Actions])
     ]
 
     opts = [strategy: :one_for_one, name: SampleGame.Supervisor]
