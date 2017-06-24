@@ -297,4 +297,28 @@ defmodule GsGraphTest do
   test "getting non-existing name returns nil" do
     assert GsGraph.get_by_name("not a real thing") == nil
   end
+
+  test "atomic limited increment works" do
+    node = GsGraph.make_node(%{hp: 20})
+
+    assert GsGraph.update!([{:incr, node.id, :hp, 3, {0, 100}}]) == :ok
+
+    assert GsGraph.data(node.id) == %{hp: 23}
+  end
+
+  test "atomic limited increment limits upwards" do
+    node = GsGraph.make_node(%{hp: 20})
+
+    assert GsGraph.update!([{:incr, node.id, :hp, 300, {0, 100}}]) == :ok
+
+    assert GsGraph.data(node.id) == %{hp: 100}
+  end
+
+  test "atomic limited increment limits downwards" do
+    node = GsGraph.make_node(%{hp: 20})
+
+    assert GsGraph.update!([{:incr, node.id, :hp, -500, {0, 100}}]) == :ok
+
+    assert GsGraph.data(node.id) == %{hp: 0}
+  end
 end

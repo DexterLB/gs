@@ -72,6 +72,17 @@ defmodule GsGraph.Writes do
     []
   end
 
+  def run({:incr, node_id, key, amount, {low, high}}) do
+    node = Node.read(node_id)
+
+    node |> Node.set_data(%{
+      node.data |
+        key => incr(Map.get(node.data, key), amount, {low, high})
+    })
+
+    [node]
+  end
+
   defp clear_from_parent(child) do
     case child.parent do
       {parent_id, label} ->
@@ -79,5 +90,9 @@ defmodule GsGraph.Writes do
           |> Node.del_child(child.id, label)
       nil -> nil
     end
+  end
+
+  defp incr(val, amount, {low, high}) do
+    val + amount |> min(high) |> max(low)
   end
 end
