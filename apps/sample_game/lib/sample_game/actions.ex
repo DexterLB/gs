@@ -79,6 +79,10 @@ defmodule SampleGame.Actions do
         
         :ok = GsGraph.subscribe(self(), [new_player.id])
 
+        :ok = GsGraph.update!([
+          {:attach, new_player.id, "sees", field()}
+        ])
+
         new_player.id
 
       old_player -> old_player

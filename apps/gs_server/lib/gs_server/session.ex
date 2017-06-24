@@ -32,7 +32,7 @@ defmodule GsServer.Session do
   end
 
   defp write(client, data) do
-    :gen_tcp.send(client, data)
+    :gen_tcp.send(client, [data, "\n"])
   end
 
   defp format_nodes(nodes) do
