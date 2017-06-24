@@ -1,5 +1,5 @@
 defmodule GsServer.TcpServer do
-  def listen do
+  def listen(action_spec) do
     {:ok, socket} = :gen_tcp.listen(
       Application.fetch_env!(:gs_server, :port),
       [
@@ -9,22 +9,22 @@ defmodule GsServer.TcpServer do
       ]
     )
 
-    accept(socket)
+    accept(socket, action_spec)
   end
 
-  defp accept(socket) do
+  defp accept(socket, action_spec) do
     {:ok, client} = :gen_tcp.accept(socket)
     {:ok, pid} = Task.Supervisor.start_child(
       GsServer.TcpServer.ClientSupervisor,
       fn ->
-        {:ok, pid} = GenServer.start_link(GsServer.Session, client)
+        {:ok, pid} = GenServer.start_link(GsServer.Session, {client, action_spec})
         serve_loop(client, pid) 
       end
     )
 
     :ok = :gen_tcp.controlling_process(client, pid)
 
-    accept(socket)
+    accept(socket, action_spec)
   end
 
   defp serve(client, session_pid) do

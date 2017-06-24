@@ -15,11 +15,10 @@ defmodule GsServer.TcpServer.Supervisor do
     Supervisor.start_child(@name, [target])
   end
 
-  def init(args) do
-    IO.inspect(args)
+  def init(action_spec) do
     children = [
       supervisor(Task.Supervisor, [[name: GsServer.TcpServer.ClientSupervisor]]),
-      worker(Task, [GsServer.TcpServer, :listen, []])
+      worker(Task, [GsServer.TcpServer, :listen, [action_spec]])
     ]
 
     supervise(children, strategy: :one_for_all)
