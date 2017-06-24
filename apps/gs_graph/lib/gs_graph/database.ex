@@ -139,4 +139,8 @@ defdatabase GsGraph.Database do
       end
     end
   end
+
+  deftable Name, [:name, :node_id], type: :set do
+    @type t :: %Name{name: String.t, node_id: Node.id}
+  end
 end

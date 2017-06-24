@@ -6,6 +6,7 @@ defmodule GsGraph do
   """
 
   alias GsGraph.Database.Node
+  alias GsGraph.Database.Name
   alias GsGraph.Writes
   alias GsGraph.RefKeeper
 
@@ -64,6 +65,13 @@ defmodule GsGraph do
 
   def data(node_id) do
     node_id |> get |> data
+  end
+
+  def get_by_name(name) do
+    case Name.read!(name) do
+      nil -> nil
+      rec -> rec.node_id
+    end
   end
 
   def subscribe(pid, node_ids) do

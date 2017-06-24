@@ -285,4 +285,12 @@ defmodule GsGraphTest do
 
     assert_receive({:nodes_changed, [%GsGraph.Database.Node{data: %{foo: 56}}]})
   end
+
+  test "naming node works" do
+    node = GsGraph.make_node(%{})
+
+    assert GsGraph.update!([{:set_name, node.id, "a nice node"}]) == :ok
+
+    assert GsGraph.get_by_name("a nice node") == node.id
+  end
 end

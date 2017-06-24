@@ -1,12 +1,14 @@
 defmodule GsGraph.Writes do
   alias GsGraph.Database.Node
+  alias GsGraph.Database.Name
 
   @type update_operation ::
     {:adopt, Node.id, nil} |
     {:adopt, Node.id, Node.label, Node.id} |
     {:attach, Node.id, Node.label, Node.id} |
     {:detach, Node.id, Node.label, Node.id} |
-    {:set_data, Node.id, Node.data}
+    {:set_data, Node.id, Node.data} |
+    {:set_name, Node.id, String.t}
 
   @type error :: {:error, any}
   @type maybe_error :: error | :ok
@@ -62,6 +64,12 @@ defmodule GsGraph.Writes do
     node |> Node.set_data(data)
 
     [node]
+  end
+
+  def run({:set_name, node_id, name}) do
+    %Name{name: name, node_id: node_id} |> Name.write!
+
+    []
   end
 
   defp clear_from_parent(child) do
