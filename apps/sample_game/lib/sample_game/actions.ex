@@ -4,34 +4,7 @@ defmodule SampleGame.Actions do
   action "register", [name, data] do
     nil = data
 
-    field = case GsGraph.get_by_name("field") do
-      nil ->
-        new_field = GsGraph.make_node(%{"type" => "field"})
-        GsGraph.update!([
-          {:set_name, new_field.id, "field"}
-        ])
-        
-        new_field.id
-      old_field -> old_field
-    end
-
-    player = case GsGraph.get_by_name("player " <> name) do
-      nil ->
-        new_player = GsGraph.make_node(%{
-          "type" => "player",
-          "name" => name
-        })
-
-        GsGraph.update!([
-          {:adopt, field, "contains", new_player.id}
-        ])
-
-        new_player.id
-
-      old_player -> old_player
-    end
-          
-    {:ok, %{player_id: player}}
+    {:ok, %{player_id: player(name)}}
   end
 
   action "print", [text, data] do
@@ -52,5 +25,38 @@ defmodule SampleGame.Actions do
     :ok = Mix.Tasks.GsGraph.Visualise.run(nil)
 
     {:ok, data}
+  end
+
+  defp field do
+    case GsGraph.get_by_name("field") do
+      nil ->
+        new_field = GsGraph.make_node(%{"type" => "field"})
+        GsGraph.update!([
+          {:set_name, new_field.id, "field"}
+        ])
+        
+        new_field.id
+      old_field -> old_field
+    end
+  end
+
+  defp player(name) do
+    case GsGraph.get_by_name("player " <> name) do
+      nil ->
+        new_player = GsGraph.make_node(%{
+          "type" => "player",
+          "name" => name,
+        })
+
+        GsGraph.update!([
+          {:set_name, new_player.id, "player " <> name},
+          {:adopt, field(), "is in", new_player.id}
+        ])
+
+        new_player.id
+
+      old_player -> old_player
+    end
+          
   end
 end
