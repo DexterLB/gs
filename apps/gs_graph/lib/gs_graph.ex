@@ -26,11 +26,15 @@ defmodule GsGraph do
   alias GsGraph.RefKeeper
 
   @doc """
+    Creates a node with the given data
   """
   def make_node(data = %{}) do
     Node.new(data)
   end
 
+  @doc """
+    Atomically performs a series of write operations
+  """
   def update!(operations) do
     # TODO: loop over all writes, transforming IDs to their respective
     # nodes
@@ -48,6 +52,9 @@ defmodule GsGraph do
     end
   end
 
+  @doc """
+    The given nodes will receive an update
+  """
   def nudge(nodes) do
     nodes |> Enum.map(fn(node) -> node.id end) |> MapSet.new |> RefKeeper.nudge
   end
@@ -107,6 +114,10 @@ defmodule GsGraph do
     end
   end
 
+  @doc """
+    The given pid will receive updates about the given nodes and their children
+    until it dies
+  """
   def subscribe(pid, node_ids) do
     case GsGraph.Subscriber.Supervisor.start_subscriber({pid, node_ids}) do
       {:ok, _} -> :ok
