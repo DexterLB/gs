@@ -1,8 +1,23 @@
 use Amnesia
-
 defmodule GsGraph do
   @moduledoc """
-  foo bar
+    This module provides an abstraction for operating with "nodes". Each
+    node can have connections to other nodes, which can be weak (pseudo) and strong.
+
+    Each connection has a label. Each node has a single parent (aka incoming
+    strong connection), but can have many pseudo parents.
+
+    Each node can have many children and pseudo children.
+
+    The only purpose of strong connections is to maintain consistency:
+    deleting a node will cascade to all its children with strong connections.
+
+    Each node is identified by an unique id, and has an update ref. Whenever
+    a node is updated in any way, its ref changes, propagating to parents.
+
+    One can subscribe to a node to receive updates each time its ref is updated
+    (which effectively means that updates will be received whenever any node
+    downwards from the subscribed node is updated)
   """
 
   alias GsGraph.Database.Node
