@@ -67,6 +67,24 @@ defmodule GsGraph do
     node_id |> get |> data
   end
 
+  def child(node_id, label) do
+    node = node_id |> get
+    matching_children = case node |> children |> Map.get(label) do
+      nil -> []
+      ids -> ids |> MapSet.to_list
+    end
+
+    matching_pseudo_children = case node |> pseudo_children |> Map.get(label) do
+      nil -> []
+      ids -> ids |> MapSet.to_list
+    end
+      
+
+    [child|_] = List.flatten([matching_children, matching_pseudo_children])
+
+    child
+  end
+
   def get_by_name(name) do
     case Name.read!(name) do
       nil -> nil

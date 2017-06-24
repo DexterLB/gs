@@ -93,6 +93,6 @@ defmodule GsGraph.Writes do
   end
 
   defp incr(val, amount, {low, high}) do
-    val + amount |> min(high) |> max(low)
+    IO.inspect(val + amount |> min(high) |> max(low))
   end
 end
