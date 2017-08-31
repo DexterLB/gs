@@ -1,0 +1,78 @@
+layer 1: data store
+
+layer 2: object graph
+    - create(parent, edge_label, data) -> object_id
+    - update(object_id, data)
+
+    - get(object_id, recursion_policy) -> object_tree
+    - subscribe(object_id, recursion_policy)
+
+    - adopt(object_id, new_parent, new_edge_label)
+    - attach(object_id, pseudo_parent, edge_label)
+
+    - detach(object_id, pseudo_parent)
+    - delete(object_id)
+
+    - sanitise() // delete orphans etc
+
+    * recursion_policy: {
+        children: single_object | with_children | with_children_and_pseudo_children
+        edges: <edge label match expression>
+    }
+
+    * object_tree: {
+        object_id
+        data
+        update_ref
+        recursed_children: map(edge_label -> set(object_tree))
+        non_recursed_children: map(edge_label -> set(object_id))
+    }
+
+    problem: notifying subscribers
+        idea 2: async BFS (perform bulk update: update the values and then get the
+        parents of all affected nodes. bump their update_refs and get their parents,
+        pushing them in a queue, while popping and bumping at the same time)
+            + doesn't block
+            + distributed
+            - lots of network traffic for every update (well, maybe logn is not that much)
+            - a bit slow per single update
+
+    problem: race conditions
+        idea: implement several basic operations with redis lua scripts:
+            - update, but only if current value matches given old value
+            - increment, decrement, any atomic functions on a single nodea
+
+
+    problem: notify subscribers only about the differences in data
+        idea: keep a set of the (object_id, update_ref) pairs in something not
+            very space consuming (like a cuckoo filter).
+
+    general algorithm:
+        - actions can perform reads and writes (writes are in bulk)
+        - "acquire lock" is a read operation which tries to get a lock with
+          a given key (may be a node, node + attribute, or maybe one of those
+          and a salt?), and may block or fail
+        - locking reads - reads which atomically read a value and acquire
+          a lock on it (can be easily implemented with lua + hash slots)
+        - "release lock" is a write operation
+        - bulk write which performs the given writes and calls ref updating
+        - maybe also a bulk read which can asynchronously acquire locks
+          (retrying them as needed)
+
+    required:
+        - eredis, eredis_cluster etc all perform monolithic pipeline.
+          need to replace it with something more asynchronous.
+
+layer 3: gameplay
+    - subscribe(root_object_id)
+    - action(arguments...)
+
+    - passthrough of layer 2 functions for privileged clients
+
+layer 4: connection
+    - connect()
+    - identify(user, session etc) -> subscription
+    - action(arguments...)
+
+layer 5: client
+    - пуцане
