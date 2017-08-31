@@ -46,6 +46,13 @@ layer 2: object graph
     problem: notify subscribers only about the differences in data
         idea: keep a set of the (object_id, update_ref) pairs in something not
             very space consuming (like a cuckoo filter).
+    
+    problem: need to store location data and find nearby objects
+        idea: make a "location" attribute type for nodes. Implement it using
+            siepinski subdivision tags, so that they can be searched for by
+            prefix search. Have a global "shard radius" and store the left N
+            bits as a key string and the rest in a sorted set under that key,
+            so that a search within the radius is fast (and implemented in lua)
 
     general algorithm:
         - actions can perform reads and writes (writes are in bulk)
@@ -62,6 +69,7 @@ layer 2: object graph
     required:
         - eredis, eredis_cluster etc all perform monolithic pipeline.
           need to replace it with something more asynchronous.
+    
 
 layer 3: gameplay
     - subscribe(root_object_id)
